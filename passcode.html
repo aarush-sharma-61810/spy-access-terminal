@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Secure Access Terminal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      background-color: black;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      text-align: center;
+    }
+
+    #main-heading {
+      font-size: 2em;
+      margin-top: 20px;
+    }
+
+    #status {
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 1.2em;
+      border-radius: 10px;
+      background-color: #111;
+      border: 2px solid #00ff00;
+      width: 80%;
+      max-width: 400px;
+    }
+
+    #pin-display-container {
+      border: 2px solid #00ff00;
+      padding: 15px;
+      margin: 20px 0;
+      width: 80%;
+      max-width: 300px;
+      background-color: #111;
+      display: flex;
+      justify-content: center;
+    }
+
+    #pin-display {
+      font-size: 2em;
+      letter-spacing: 10px;
+      word-break: break-all;
+      max-width: 100%;
+      overflow-wrap: break-word;
+    }
+
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      width: 90%;
+      max-width: 500px;
+      flex-grow: 1;
+      margin-bottom: 20px;
+    }
+
+    .key {
+      background-color: #111;
+      color: #00ff00;
+      border: 2px solid #00ff00;
+      border-radius: 10px;
+      font-size: 2em;
+      padding: 20px;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .key:active {
+      background-color: #00ff00;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="main-heading">Secure Access - Enter PIN</div>
+  <div id="status">Awaiting Input</div>
+
+  <div id="pin-display-container">
+    <div id="pin-display"></div>
+  </div>
+
+  <div class="keypad">
+    <div class="key" onclick="pressKey('1')">1</div>
+    <div class="key" onclick="pressKey('2')">2</div>
+    <div class="key" onclick="pressKey('3')">3</div>
+    <div class="key" onclick="pressKey('4')">4</div>
+    <div class="key" onclick="pressKey('5')">5</div>
+    <div class="key" onclick="pressKey('6')">6</div>
+    <div class="key" onclick="pressKey('7')">7</div>
+    <div class="key" onclick="pressKey('8')">8</div>
+    <div class="key" onclick="pressKey('9')">9</div>
+    <div class="key" onclick="clearPIN()">Clear</div>
+    <div class="key" onclick="pressKey('0')">0</div>
+    <div class="key" onclick="submitPIN()">Enter</div>
+  </div>
+
+  <audio id="alarm-sound" src="alarm.mp3"></audio>
+
+  <script>
+    const allowedPins = {
+      "1234": "Alpha",
+      "5678": "Bravo",
+      "43211234": "Charlie",
+      "87654321": "Delta",
+      "9876543210": "Echo",
+      "112233445566": "Foxtrot"
+    };
+
+    let currentPIN = "";
+
+    function pressKey(num) {
+      if (currentPIN.length < 12) {
+        currentPIN += num;
+        updateDisplay();
+      }
+    }
+
+    function clearPIN() {
+      currentPIN = "";
+      updateDisplay();
+    }
+
+    function updateDisplay() {
+      document.getElementById('pin-display').innerText = "*".repeat(currentPIN.length);
+    }
+
+    function submitPIN() {
+      if (currentPIN.length < 4) return;
+
+      if (allowedPins.hasOwnProperty(currentPIN)) {
+        showResult(`Welcome Agent ${allowedPins[currentPIN]}`, "green", 3000);
+      } else {
+        showResult("Access Denied", "red", 10000, true);
+      }
+    }
+
+    function showResult(message, color, duration, playAlarm = false) {
+      document.getElementById('main-heading').innerText = message;
+      document.getElementById('status').innerText = message;
+      document.getElementById('status').style.backgroundColor = color === "green" ? "#003300" : "#330000";
+      document.getElementById('status').style.borderColor = color;
+
+      document.querySelector('.keypad').style.display = 'none';
+      document.getElementById('pin-display-container').style.display = 'none';
+
+      if (playAlarm) {
+        const alarm = document.getElementById('alarm-sound');
+        alarm.currentTime = 0;
+        alarm.play();
+      }
+
+      setTimeout(() => {
+        document.getElementById('main-heading').innerText = "Secure Access - Enter PIN";
+        document.getElementById('status').innerText = "Awaiting Input";
+        document.getElementById('status').style.backgroundColor = "#111";
+        document.getElementById('status').style.borderColor = "#00ff00";
+        document.querySelector('.keypad').style.display = 'grid';
+        document.getElementById('pin-display-container').style.display = 'flex';
+        currentPIN = "";
+        updateDisplay();
+
+        if (playAlarm) {
+          document.getElementById('alarm-sound').pause();
+        }
+      }, duration);
+    }
+  </script>
+
+</body>
+</html>
