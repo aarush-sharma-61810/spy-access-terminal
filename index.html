@@ -50,7 +50,7 @@
     #pin-display {
       font-size: 2em;
       letter-spacing: 10px;
-      word-break: break-all;
+      word-break: break-word;
       max-width: 100%;
       overflow-wrap: break-word;
     }
@@ -58,7 +58,7 @@
     .keypad {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      gap: 12px;
       width: 90%;
       max-width: 500px;
       flex-grow: 1;
@@ -69,7 +69,7 @@
       background-color: #111;
       color: #00ff00;
       border: 2px solid #00ff00;
-      border-radius: 10px;
+      border-radius: 15px;
       font-size: 2em;
       padding: 20px;
       width: 100%;
@@ -78,12 +78,18 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: background-color 0.2s;
+      box-shadow: 0 0 10px #00ff00;
+      transition: all 0.2s ease;
+    }
+
+    .key:hover {
+      background-color: #003300;
     }
 
     .key:active {
       background-color: #00ff00;
       color: black;
+      box-shadow: 0 0 20px #00ff00;
     }
   </style>
 </head>
